@@ -1,5 +1,11 @@
 [
   {
+    "title": "Claude Code Best Practice",
+    "date": "2026-05-15",
+    "url": "posts/boris-cherny-claude-code.html",
+    "description": "Boris Cherny создал Claude Code, а энтузиасты собрали его практические советы в одном месте. Полезно даже тем, кто не хочет в vendor lock."
+  },
+  {
     "title": "Нетворкаем!",
     "date": "2026-05-05",
     "url": "posts/networking-product-meetup.html",
