@@ -7,6 +7,16 @@ export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   reporter: [["list"], ["html", { open: "never" }]],
+  expect: {
+    toHaveScreenshot: {
+      animations: "disabled",
+      caret: "hide",
+      maxDiffPixelRatio: 0.001,
+      pathTemplate: "{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}-{platform}{ext}",
+      scale: "css",
+      threshold: 0.2,
+    },
+  },
   use: {
     baseURL,
     trace: "on-first-retry",
