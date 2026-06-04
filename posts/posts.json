@@ -1,5 +1,11 @@
 [
   {
+    "title": "Регрессионное тестирование мечты!",
+    "date": "2026-06-04",
+    "url": "posts/regression-testing-dream.html",
+    "description": "Немного e2e и visual regression тестов на Playwright еще никому не повредили."
+  },
+  {
     "title": "Монолит или микросервисы?",
     "date": "2026-05-26",
     "url": "posts/monolith-or-microservices.html",
