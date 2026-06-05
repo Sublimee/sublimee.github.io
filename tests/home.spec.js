@@ -44,12 +44,23 @@ test("header exposes the expected social links", async ({ page }) => {
     "href",
     "https://www.linkedin.com/in/maksim-gusev-b70670b1/",
   );
+  await expect(page.getByRole("link", { name: "Резюме" })).toHaveAttribute(
+    "href",
+    "/Gusev_Maksim_CV.pdf",
+  );
 
   for (const link of await page.locator(".social-link").all()) {
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", /noreferrer/);
     await expect(link).toHaveAttribute("rel", /noopener/);
   }
+});
+
+test("resume PDF is available", async ({ page }) => {
+  const response = await page.request.get("/Gusev_Maksim_CV.pdf");
+
+  expect(response.ok()).toBe(true);
+  expect(response.headers()["content-type"]).toContain("application/pdf");
 });
 
 test("article list shows an empty state when posts cannot be loaded", async ({ page }) => {

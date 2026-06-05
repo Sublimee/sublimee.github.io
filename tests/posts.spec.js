@@ -47,6 +47,10 @@ for (const post of posts) {
             "href",
             "https://www.linkedin.com/in/maksim-gusev-b70670b1/",
         );
+        await expect(header.getByRole("link", {name: "Резюме", exact: true})).toHaveAttribute(
+            "href",
+            "/Gusev_Maksim_CV.pdf",
+        );
 
         for (const link of await header.locator(".social-link").all()) {
             await expect(link).toHaveAttribute("target", "_blank");
