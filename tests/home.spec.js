@@ -63,6 +63,24 @@ test("resume PDF is available", async ({ page }) => {
   expect(response.headers()["content-type"]).toContain("application/pdf");
 });
 
+test("favicon assets are exposed", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.locator('link[rel="icon"][sizes="32x32"]')).toHaveAttribute("href", "/favicon-32x32.png");
+  await expect(page.locator('link[rel="icon"][sizes="512x512"]')).toHaveAttribute("href", "/favicon-512x512.png");
+  await expect(page.locator('link[rel="apple-touch-icon"][sizes="180x180"]')).toHaveAttribute(
+    "href",
+    "/apple-touch-icon.png",
+  );
+
+  for (const path of ["/favicon-32x32.png", "/favicon-512x512.png", "/apple-touch-icon.png"]) {
+    const response = await page.request.get(path);
+
+    expect(response.ok()).toBe(true);
+    expect(response.headers()["content-type"]).toContain("image/png");
+  }
+});
+
 test("article list shows an empty state when posts cannot be loaded", async ({ page }) => {
   await page.route("**/posts/posts.json", (route) =>
     route.fulfill({

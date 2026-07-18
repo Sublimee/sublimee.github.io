@@ -11,6 +11,11 @@ for (const post of posts) {
         await expect(page.locator("article.post time")).toHaveAttribute("datetime", post.date);
         await expect(page.locator(".brand")).toHaveAttribute("href", "/");
         await expect(page.locator(".post-top-link")).toHaveAttribute("href", "../index.html");
+        await expect(page.locator('link[rel="icon"][sizes="32x32"]')).toHaveAttribute("href", "/favicon-32x32.png");
+        await expect(page.locator('link[rel="apple-touch-icon"][sizes="180x180"]')).toHaveAttribute(
+            "href",
+            "/apple-touch-icon.png",
+        );
 
         const brokenImages = await page.locator("img").evaluateAll((images) =>
             images
