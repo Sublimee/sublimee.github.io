@@ -10,6 +10,7 @@ for (const post of posts) {
         await expect(page.locator("article.post h1")).toHaveText(post.title);
         await expect(page.locator("article.post time")).toHaveAttribute("datetime", post.date);
         await expect(page.locator(".brand")).toHaveAttribute("href", "/");
+        await expect(page.locator(".post-top-link")).toHaveAttribute("href", "../index.html");
 
         const brokenImages = await page.locator("img").evaluateAll((images) =>
             images
@@ -18,6 +19,11 @@ for (const post of posts) {
         );
         expect(brokenImages).toEqual([]);
 
+        await page.locator(".post-top-link").click();
+        await expect(page).toHaveURL(/\/index\.html$/);
+        await expect(page.locator(".article-item")).toHaveCount(posts.length);
+
+        await page.goto(post.url);
         await page.locator(".back-link").click();
         await expect(page).toHaveURL(/\/index\.html$/);
         await expect(page.locator(".article-item")).toHaveCount(posts.length);
