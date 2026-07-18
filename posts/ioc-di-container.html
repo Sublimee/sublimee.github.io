@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IoC Container или DI Container? | magusev.ru</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post">
+          <time datetime="2026-06-29">29 июня 2026</time>
+          <h1>IoC Container или DI Container?</h1>
+          <img
+            class="post-cover"
+            src="../photos/35ff1efb-1cc5-48c6-8c92-f88fbf1e7aa3.png"
+            alt="Схема с разделением IoC, DIP, DI и IoC Container"
+          />
+
+          <p>
+            Когда вы начинаете изучать Spring, то неизбежно сталкиваетесь с понятиями IoC (Inversion of Control) и DI
+            (Dependency Injection). Часто их используют в сочетаниях IoC Container и DI Container. Масла в огонь
+            подливает созвучный принцип, который скрывается за буквой D в SOLID, DIP (Dependency Inversion Principle).
+          </p>
+          <p>
+            Исходя из своего опыта проведения собеседований могу сказать, что пониманием разницы обладают единицы. А
+            может оно и не надо? Что скрывается за этими понятиями и что отвечать на собеседованиях?
+          </p>
+          <p>
+            В
+            <a
+              href="https://sergeyteplyakov.blogspot.com/2014/11/di-vs-dip-vs-ioc.html"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              статье
+            </a>
+            и
+            <a
+              href="https://gitlab.axsoft.ru/common/wiki/-/blob/21cbeebc93dfd461c2fe4ce4af4ad773438c21f6/IoC%20vs%20DIP%20vs%20DI.md"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              её развитии
+            </a>
+            дано разграничение понятий IoC, DI и DIP. Я с удовольствием почитал комментарии и статьи Фаулера
+            <a href="https://martinfowler.com/articles/injection.html" target="_blank" rel="noreferrer noopener">1</a>
+            и
+            <a href="https://martinfowler.com/bliki/InversionOfControl.html" target="_blank" rel="noreferrer noopener">
+              2
+            </a>, которые были взяты за основу.
+          </p>
+          <p>
+            Осталось разобраться, есть ли разница между понятиями IoC Container и DI Container. И если есть, то какое из
+            них следует использовать?
+          </p>
+          <p>Однозначного ответа на эти вопросы мне найти не удалось, однако в результате анализа я выделил три позиции:</p>
+          <ol>
+            <li>
+              IoC Container — слишком широкое понятие, которое ничего не говорит о том, что он на самом деле делает.
+              Абсолютно любой фреймворк можно назвать IoC-контейнером, потому что он по определению реализует инверсию
+              управления и является контейнером для кода общего назначения.
+            </li>
+            <li>
+              IoC Container == DI Container. Оба понятия обозначают одно и то же: фреймворки для эффективной реализации
+              автоматической регистрации, внедрения и управления жизненным циклом зависимостей.
+            </li>
+            <li>
+              IoC Container — механизм, который реализует принцип инверсии управления и позволяет в том числе управлять
+              жизненным циклом объектов и их зависимостями. DI Container — частный вариант IoC Container, который
+              специализируется на внедрении зависимостей в объекты.
+            </li>
+          </ol>
+          <p>
+            Первая позиция выглядит разумно, но понятие IoC Container всё же более узкое по отношению к фреймворку: это
+            набор механизмов, который предоставляет фреймворк для реализации инверсии управления.
+          </p>
+          <p>
+            Вторую позицию я видел чаще всего. Если сократить «инверсию управления» до «внедрения зависимостей» и
+            одновременно обогатить «внедрение зависимостей» управлением жизненным циклом, то с равенством IoC Container
+            == DI Container можно согласиться.
+          </p>
+          <p>
+            Третья позиция, наоборот, самая непопулярная, но выглядит наиболее сбалансированной и наиболее точно отражает
+            суть понятий IoC и DI.
+          </p>
+          <h2>Что отвечать на собеседованиях?</h2>
+          <p>
+            Если говорить о Spring, то стоит обратиться к разделу документации
+            <a
+              href="https://docs.spring.io/spring-framework/reference/core/beans/introduction.html"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Introduction to the Spring IoC Container and Beans
+            </a>. На что стоит обратить внимание?
+          </p>
+          <ol>
+            <li>Исходя из названия раздела, контейнер в Spring всё же IoC.</li>
+            <li>
+              Авторы пишут, что <code>IoC is also known as dependency injection (DI)</code>. Как видим, составители
+              документации достаточно небрежно относятся к терминологии или просто потакают мнению не разобравшихся в
+              вопросе. Авторы отождествляют понятия IoC и DI, а значит IoC Container и DI Container можно считать
+              равнозначными. Так же, по моим наблюдениям, считает и большинство разработчиков.
+            </li>
+            <li>
+              Авторы документации вкладывают в понятие IoC Container всё же больше, чем просто внедрение зависимостей:
+              BeanFactory даёт механизм конфигурирования для объектов любого типа, а ApplicationContext добавляет
+              интеграцию с AOP, работу с сообщениями, публикацию событий и прикладные контексты вроде
+              WebApplicationContext.
+            </li>
+          </ol>
+          <p>
+            Подведём итог. Когда говорят об IoC/DI Container в контексте Spring, то в подавляющем большинстве случаев
+            говорят о внедрении зависимостей, так что можно считать понятия равнозначными. Однако сам контейнер даёт
+            больше возможностей, чем просто внедрение зависимостей, о чём следует помнить.
+          </p>
+
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

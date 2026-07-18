@@ -6,6 +6,12 @@
     "description": "Функторы, монады и каррирование на простых примерах из Haskell, Java и Kotlin."
   },
   {
+    "title": "IoC Container или DI Container?",
+    "date": "2026-06-29",
+    "url": "posts/ioc-di-container.html",
+    "description": "Разбираемся, чем отличаются IoC, DI, DIP, IoC Container и DI Container в контексте Spring."
+  },
+  {
     "title": "Почему я не возьму тебя к себе в команду по итогам технического интервью?",
     "date": "2026-06-21",
     "url": "posts/why-i-wont-hire-you-after-tech-interview.html",
