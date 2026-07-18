@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Функциональное программирование в массы! | magusev.ru</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post">
+          <time datetime="2026-07-09">9 июля 2026</time>
+          <h1>Функциональное программирование в массы!</h1>
+          <img
+            class="post-cover"
+            src="../photos/0d902b1d-6778-46ea-871a-a3d2cf665f71.png"
+            alt="Мем с подписью «A monad is just a monoid in the category of endofunctors»"
+          />
+
+          <p>
+            В результате
+            <a href="https://t.me/senior_junior_developer/197" target="_blank" rel="noreferrer noopener">опроса</a>
+            на знание терминов из функционального программирования выяснилось, что нам с вами стоит напомнить себе
+            базовые понятия. Постарался сделать это на простых примерах понятным языком.
+          </p>
+          <p>
+            <strong>Функтор</strong> — это «контейнер», который поддерживает функцию <code>fmap()</code> (устоявшееся
+            название). Она позволяет применить к каждому элементу внутри контейнера переданную функцию без изменения
+            исходной структуры.
+          </p>
+          <p>Иными словами, если у типа есть реализация <code>fmap</code>, то с ним можно работать как с функтором.</p>
+          <p>На примере Haskell:</p>
+          <pre><code>fmap (+1) (Just 2)  -- Just 3
+fmap (+1) [1, 2, 3] -- [2, 3, 4]</code></pre>
+          <p>
+            Java глобально такую абстракцию реализовать не даёт, есть только конкретные классы с таким поведением.
+            Приходят на ум очевидные <code>Optional</code>, <code>Stream</code> и <code>CompletableFuture</code>:
+          </p>
+          <pre><code>Optional&lt;User&gt; user = findUser();
+Optional&lt;String&gt; name = user.map(User::getName);</code></pre>
+          <p>
+            <strong>Монада</strong> — развитие идеи функторов. Если <code>Optional.map()</code> позволяет модифицировать
+            содержимое контейнера через функции <code>T -&gt; R</code>, то <code>Optional.flatMap()</code> работает с
+            функциями <code>T -&gt; Optional&lt;R&gt;</code> и убирает лишнюю вложенность.
+          </p>
+          <p>Для <code>Optional&lt;Address&gt; findAddress(User user)</code>:</p>
+          <pre><code>Optional&lt;Optional&lt;Address&gt;&gt; address = findUser().map(user -&gt; findAddress(user)); // неудобно
+Optional&lt;Address&gt; address = findUser().flatMap(user -&gt; findAddress(user));</code></pre>
+          <p>
+            Да, <code>Optional</code> и функтор, и монада. Монады, в отличие от функторов, позволяют строить цепочки
+            вычислений, где каждая следующая функция возвращает значение в контейнере.
+          </p>
+          <p>
+            Ну и классический пример превосходства функционального подхода, когда разработчику не приходится задумываться
+            о содержимом контейнера:
+          </p>
+          <pre><code>Optional&lt;String&gt; city = findUser()
+    .flatMap(this::findAddress)
+    .map(Address::city);
+
+// vs
+User user = findUser();
+if (user == null) {
+    return null;
+}
+Address address = findAddress(user);
+if (address == null) {
+    return null;
+}
+return address.city();</code></pre>
+          <p>
+            <strong>Каррирование</strong> — преобразование функции от многих аргументов в набор вложенных функций, каждая
+            из которых является функцией от одного аргумента. Зачем? За счёт частичного применения функция может быть
+            удобно переиспользована.
+          </p>
+          <p>В Haskell поддержка нативная:</p>
+          <pre><code>sum' :: Int -&gt; Int -&gt; Int -- то же, что и Int -&gt; (Int -&gt; Int)
+sum' a b = a + b
+
+print (sum' 2 3)     -- можно так
+print ((sum' 2) 3)   -- и так
+
+let addTwo = sum' 2
+print (addTwo 10)    -- 12</code></pre>
+          <p>В Java имитируем это через функцию, которая возвращает функцию:</p>
+          <pre><code>Integer.sum(2)(3); // нельзя
+Integer.sum(2, 3); // только так
+
+Function&lt;Integer, Function&lt;Integer, Integer&gt;&gt; curriedSum = a -&gt; b -&gt; a + b;
+System.out.println(curriedSum.apply(2).apply(3)); // 5
+
+Function&lt;Integer, Integer&gt; addTwo = curriedSum.apply(2);
+System.out.println(addTwo.apply(10)); // 12</code></pre>
+          <p>В Kotlin тоже нет каррирования из коробки, но синтаксис имитации приятнее:</p>
+          <pre><code>fun sum(a: Int, b: Int): Int = a + b
+sum(2)(3) // нельзя
+sum(2, 3) // только так
+
+val curriedSum: (Int) -&gt; (Int) -&gt; Int = { a -&gt; { b -&gt; a + b } }
+println(curriedSum(2)(3)) // 5
+
+val addTwo = curriedSum(2)
+println(addTwo(10)) // 12</code></pre>
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>
