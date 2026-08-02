@@ -1,5 +1,11 @@
 [
   {
+    "title": "Простейший бесплатный сетап для тестирования своего проекта",
+    "date": "2026-07-29",
+    "url": "posts/vibecoding-projects-hosting.html",
+    "description": "Публичный адрес с HTTPS без VPS и полностью бесплатно"
+  },
+  {
     "title": "Функциональное программирование в массы!",
     "date": "2026-07-09",
     "url": "posts/functional-programming-in-masses.html",

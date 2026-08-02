@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Простейший бесплатный сетап для тестирования своего проекта | magusev.ru</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post">
+          <div class="post-meta-row">
+            <time datetime="2026-07-29">29 июля 2026</time>
+            <a class="post-top-link" href="../index.html">← На главную</a>
+          </div>
+          <h1>Простейший бесплатный сетап для тестирования своего проекта</h1>
+
+          <p>
+            Так как Telegram пока не завезли отложенный постинг сторис, то приходится автоматизировать его самому, чтобы
+            напоминать своим любимым <s>папещикам</s> подписчикам о выходе качественного контента. Как закончу, вы сразу
+            же узнаете об этом.
+          </p>
+          <p>
+            Но я тут больше хотел о технической стороне вопроса поговорить. У этого моего pet-проекта, как и у многих
+            других, возникает вопрос с доменом. В данном случае он требуется для того, чтобы слушать события о появлении
+            новых постов. Да ещё и на
+            <a href="https://core.telegram.org/bots/api#setwebhook" target="_blank" rel="noreferrer noopener">HTTPS</a>!
+          </p>
+          <p>
+            Большинство софтин, та же Kibana, уже требуют по умолчанию HTTPS. Это, конечно, правильно, но заставляет
+            задумываться о сертификатах уже на этапе PoC (Proof of Concept).
+          </p>
+          <p>
+            Ну и, самое главное, всё навайбкоженное добро надо где-то хостить. У многих, в том числе и у меня, есть
+            VPS'ки, но вмешиваться в их налаженную работу под временные задачи вообще не хочется, а разворачивать новые
+            даже с посуточной тарификацией — это лишняя, ненужная ни вам, ни мне морока.
+          </p>
+          <p>
+            Конечно, заранее написанные «скриптики» для Terraform и Ansible, которые я писал для ныне недоступного
+            DigitalOcean, решают задачу автоматизации поднятия инфраструктуры. Но на первых этапах всегда хочется
+            чего-то совсем простого, быстрого и бесплатного.
+          </p>
+          <p>
+            В этот раз нашёл для себя
+            <a href="https://tailscale.com/kb/1223/funnel" target="_blank" rel="noreferrer noopener">Tailscale Funnel</a>,
+            чтобы хостить всё на домашнем ПК и получить бесплатный домен с HTTPS. В документации его описывают как
+            способ пробросить публичный интернет-трафик к локальному сервису внутри tailnet. Ну песня! Проще, кажется,
+            уже некуда.
+          </p>
+          <p>
+            Разве что активировать устройство для проксирования на него трафика приходилось не через API, а через
+            web-морду. Наверное, это решается получением токена, но пока не пробовал.
+          </p>
+          <p>
+            В прошлый раз я использовал связку
+            <a href="https://nip.io/" target="_blank" rel="noreferrer noopener">nip.io</a>
+            + <a href="https://letsencrypt.org/" target="_blank" rel="noreferrer noopener">Let's Encrypt</a> + VPS.
+            Тогда <a href="https://nip.io/" target="_blank" rel="noreferrer noopener">nip.io</a> произвёл на меня
+            огромное впечатление. К сожалению, из-за смерти автора проект не развивается, его дело продолжает
+            <a href="https://sslip.io/" target="_blank" rel="noreferrer noopener">sslip.io</a>.
+          </p>
+          <p>
+            Как альтернативу Tailscale Funnel ChatGPT рекомендует рассмотреть
+            <a href="https://ngrok.com/" target="_blank" rel="noreferrer noopener">ngrok</a>, а если постоянный адрес не
+            нужен, то Cloudflare Quick Tunnel, LocalTunnel,
+            <a href="https://localhost.run/" target="_blank" rel="noreferrer noopener">localhost.run</a>
+            и Pinggy. Базово все эти решения бесплатные!
+          </p>
+
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>
