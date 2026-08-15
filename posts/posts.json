@@ -1,5 +1,11 @@
 [
   {
+    "title": "Поражение в programming in small",
+    "date": "2026-08-07",
+    "url": "posts/kotlin-join-to-string-production-bug.html",
+    "description": "Как по невнимательности допустить баг на проде и почему в кодинге нас заменит ИИ"
+  },
+  {
     "title": "Простейший бесплатный сетап для тестирования своего проекта",
     "date": "2026-07-29",
     "url": "posts/vibecoding-projects-hosting.html",

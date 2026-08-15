@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Поражение в programming in small | magusev.ru</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post">
+          <div class="post-meta-row">
+            <time datetime="2026-08-07">7 августа</time>
+            <a class="post-top-link" href="../index.html">← На главную</a>
+          </div>
+          <h1>Поражение в programming in small</h1>
+
+          <p>
+            Задача — сделать композитный ключ для записи кэша, состоящий из некоторых идентификаторов переданных
+            сущностей.
+          </p>
+          <p>В чем разница между этим:</p>
+          <pre><code>val cacheKey = ids.joinToString { "," }</code></pre>
+          <p>и этим?</p>
+          <pre><code>val cacheKey = ids.joinToString(",")</code></pre>
+          <p>Очевидно! Во втором случае нет бага на проде 😺</p>
+
+          <p>
+            Чуть подробнее для тех, кто не знаком с синтаксисом Kotlin. Разница в том, какому аргументу передаётся
+            злосчастная <code>","</code>. Посмотрим на сигнатуру метода:
+          </p>
+          <pre><code>public fun &lt;T&gt; Iterable&lt;T&gt;.joinToString(
+    separator: CharSequence = ", ", // еще один сахарок -- именованные аргументы
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((T) -&gt; CharSequence)? = null
+): String</code></pre>
+          <p>
+            Kotlin любезно даёт нам синтаксический сахар в виде <code>trailing lambda</code>: когда лямбда передаётся
+            последним и единственным аргументом функции, то не требуется избыточных круглых скобок. В нашем случае это
+            возможно, так как все аргументы до лямбды <code>transform</code> имеют дефолтные значения:
+          </p>
+          <pre><code>val cacheKey = ids.joinToString(
+    transform = { element -&gt; "," } // переопределили дефолтный null
+)
+
+listOf(10, 20, 30).joinToString { "," } // ",, ,, ,"</code></pre>
+          <p>
+            Таким образом каждый элемент <code>ids</code> заменяется строкой <code>","</code>, а между элементами
+            остаётся стандартный разделитель <code>separator: CharSequence = ", "</code>.
+          </p>
+          <p>Во втором примере мы видим уже классическую передачу первого аргумента <code>separator</code>:</p>
+          <pre><code>val cacheKey = ids.joinToString(
+    separator = "," // переопределили дефолтный ", "
+)
+
+listOf(10, 20, 30).joinToString(",") // "10,20,30"</code></pre>
+
+          <p>
+            Вот такая обидная ошибка из-за невнимательности. "Но тесты должны были это отловить!" — возразите вы мне.
+            Здесь уже не обойтись обычным тестом "положить значение в кэш по динамически сгенерированному ключу, а затем
+            по нему же достать положенное ранее значение". Нужно при доставании явно прописать статичную ожидаемую
+            ключ-строку ручками.
+          </p>
+          <p>
+            Несложно, но нужно не забыть написать ещё и такой тест. В связи с этим в планах формализовать работу с кэшем
+            (и не только), чтобы у разработчиков не было возможности ошибиться. Как минимум при сборке проекта требовать
+            тесты на каждую новую мапу в кэше.
+          </p>
+          <p>
+            Ну и как вывод можно сказать, что человек в отличие от ИИшки в таких мелочах будет всегда ошибаться. Сложно
+            держать в голове в актуальном состоянии сигнатуры и поведение всех используемых методов + фокусироваться на
+            их локальном применении. Особенно с учётом того, что номера версий библиотек и фреймворков неумолимо растут.
+            Сдаём позиции в programming in small, получается!
+          </p>
+
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>
