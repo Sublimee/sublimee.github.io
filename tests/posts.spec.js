@@ -16,6 +16,11 @@ for (const post of posts) {
             "href",
             "/apple-touch-icon.png",
         );
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /\S+/);
+        await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+            "href",
+            `https://magusev.ru/${post.url}`,
+        );
 
         const brokenImages = await page.locator("img").evaluateAll((images) =>
             images

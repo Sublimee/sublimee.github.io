@@ -59,18 +59,25 @@ async function loadPosts() {
 
     const posts = await response.json();
     if (!Array.isArray(posts) || posts.length === 0) {
+      listNode.replaceChildren();
+      emptyNode.textContent = "Пока нет публикаций.";
       emptyNode.hidden = false;
       return;
     }
 
+    const fragment = document.createDocumentFragment();
     posts
       .slice()
       .sort((a, b) => b.date.localeCompare(a.date))
       .forEach((post) => {
-        listNode.appendChild(buildArticleItem(post));
+        fragment.appendChild(buildArticleItem(post));
       });
+    listNode.replaceChildren(fragment);
+    emptyNode.textContent = "";
+    emptyNode.hidden = true;
   } catch (error) {
     console.error("Failed to load posts list", error);
+    listNode.replaceChildren();
     emptyNode.textContent = "Не удалось загрузить список статей.";
     emptyNode.hidden = false;
   }

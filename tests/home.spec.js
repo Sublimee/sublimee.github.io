@@ -14,7 +14,7 @@ test("home page loads the blog index from posts.json", async ({ page }) => {
 
   await page.goto("/");
 
-  await expect(page).toHaveTitle("magusev.ru");
+  await expect(page).toHaveTitle("Блог Максима Гусева о Java, Kotlin и разработке | magusev.ru");
   await expect(page.locator(".brand")).toHaveText("magusev.ru");
   await expect(page.locator("#articles-empty")).toBeHidden();
 
@@ -31,6 +31,42 @@ test("home page loads the blog index from posts.json", async ({ page }) => {
   }
 
   expect(consoleErrors).toEqual([]);
+});
+
+test("home page exposes crawlable content and SEO metadata", async ({ page }) => {
+  const homeResponse = await page.request.get("/");
+  expect(homeResponse.ok()).toBe(true);
+
+  const homeHtml = await homeResponse.text();
+  for (const post of posts) {
+    expect(homeHtml).toContain(post.title);
+    expect(homeHtml).toContain(`href="${post.url}"`);
+  }
+  expect(homeHtml).not.toContain("Пока нет публикаций.");
+  expect(homeHtml).not.toContain("Для загрузки списка статей включите JavaScript.");
+
+  await page.goto("/");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Личный блог Максима Гусева/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://magusev.ru/");
+
+  const structuredData = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+  expect(structuredData).toMatchObject({
+    "@type": "Blog",
+    name: "Блог Максима Гусева",
+    url: "https://magusev.ru/",
+  });
+
+  const robotsResponse = await page.request.get("/robots.txt");
+  expect(robotsResponse.ok()).toBe(true);
+  expect(await robotsResponse.text()).toContain("Sitemap: https://magusev.ru/sitemap.xml");
+
+  const sitemapResponse = await page.request.get("/sitemap.xml");
+  expect(sitemapResponse.ok()).toBe(true);
+  const sitemap = await sitemapResponse.text();
+  expect(sitemap).toContain("<loc>https://magusev.ru/</loc>");
+  for (const post of posts) {
+    expect(sitemap).toContain(`<loc>https://magusev.ru/${post.url}</loc>`);
+  }
 });
 
 test("header exposes the expected social links", async ({ page }) => {

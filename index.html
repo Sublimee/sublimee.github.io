@@ -3,7 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>magusev.ru</title>
+    <title>Блог Максима Гусева о Java, Kotlin и разработке | magusev.ru</title>
+    <meta
+      name="description"
+      content="Личный блог Максима Гусева, технического лидера разработки Java/Kotlin: архитектура, тестирование, AI и инженерные практики."
+    />
+    <link rel="canonical" href="https://magusev.ru/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="magusev.ru" />
+    <meta property="og:title" content="Блог Максима Гусева о Java, Kotlin и разработке" />
+    <meta
+      property="og:description"
+      content="Архитектура, Java/Kotlin, тестирование, AI и инженерные практики от технического лидера разработки."
+    />
+    <meta property="og:url" content="https://magusev.ru/" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -15,6 +28,21 @@
     />
     <link rel="stylesheet" href="styles.css" />
     <script src="header.js" defer></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Блог Максима Гусева",
+        "url": "https://magusev.ru/",
+        "description": "Архитектура, Java/Kotlin, тестирование, AI и инженерные практики.",
+        "inLanguage": "ru",
+        "author": {
+          "@type": "Person",
+          "name": "Максим Гусев",
+          "url": "https://magusev.ru/"
+        }
+      }
+    </script>
   </head>
   <body>
     <div class="page">
@@ -26,11 +54,145 @@
         </section>
 
         <section class="articles-list" aria-label="Список статей">
-          <ul id="articles-list"></ul>
-          <p id="articles-empty" class="empty" hidden>Пока нет публикаций.</p>
-          <noscript>
-            <p class="empty">Для загрузки списка статей включите JavaScript.</p>
-          </noscript>
+          <ul id="articles-list">
+            <li class="article-item">
+              <a class="article-link" href="posts/java-monoid-fold.html">
+                <time datetime="2026-08-13">13 августа 2026 г.</time>
+                <div>
+                  <span class="article-title">Не судите строго, это мой первый моноид</span>
+                  <p class="article-description">
+                    Зачем описывать свёртку через моноид, если максимум можно найти одной строкой.
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/kotlin-join-to-string-production-bug.html">
+                <time datetime="2026-08-07">7 августа 2026 г.</time>
+                <div>
+                  <span class="article-title">Поражение в programming in small</span>
+                  <p class="article-description">
+                    Как по невнимательности допустить баг на проде и почему в кодинге нас заменит ИИ
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/vibecoding-projects-hosting.html">
+                <time datetime="2026-07-29">29 июля 2026 г.</time>
+                <div>
+                  <span class="article-title">Простейший бесплатный сетап для тестирования своего проекта</span>
+                  <p class="article-description">Публичный адрес с HTTPS без VPS и полностью бесплатно</p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/functional-programming-in-masses.html">
+                <time datetime="2026-07-09">9 июля 2026 г.</time>
+                <div>
+                  <span class="article-title">Функциональное программирование в массы!</span>
+                  <p class="article-description">
+                    Функторы, монады и каррирование на простых примерах из Haskell, Java и Kotlin.
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/ioc-di-container.html">
+                <time datetime="2026-06-29">29 июня 2026 г.</time>
+                <div>
+                  <span class="article-title">IoC Container или DI Container?</span>
+                  <p class="article-description">
+                    Разбираемся, чем отличаются IoC, DI, DIP, IoC Container и DI Container в контексте Spring.
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/why-i-wont-hire-you-after-tech-interview.html">
+                <time datetime="2026-06-21">21 июня 2026 г.</time>
+                <div>
+                  <span class="article-title">
+                    Почему я не возьму тебя к себе в команду по итогам технического интервью?
+                  </span>
+                  <p class="article-description">
+                    Почему техническое собеседование — не тестирование и как команде интервьюеров сохранить
+                    объективность.
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/ai-powered-workstations.html">
+                <time datetime="2026-06-15">15 июня 2026 г.</time>
+                <div>
+                  <span class="article-title">Делаем свои рабочие станции AI-powered!</span>
+                  <p class="article-description">История апгрейдов домашнего ПК за 15 лет.</p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/regression-testing-dream.html">
+                <time datetime="2026-06-04">4 июня 2026 г.</time>
+                <div>
+                  <span class="article-title">Регрессионное тестирование мечты!</span>
+                  <p class="article-description">
+                    Немного e2e и visual regression тестов на Playwright еще никому не повредили.
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/monolith-or-microservices.html">
+                <time datetime="2026-05-26">26 мая 2026 г.</time>
+                <div>
+                  <span class="article-title">Монолит или микросервисы?</span>
+                  <p class="article-description">
+                    В условиях неопределенности выберем между микросервисами, "классическим" и модульным монолитом.
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/boris-cherny-claude-code.html">
+                <time datetime="2026-05-15">15 мая 2026 г.</time>
+                <div>
+                  <span class="article-title">Claude Code Best Practice</span>
+                  <p class="article-description">
+                    Boris Cherny создал Claude Code, а энтузиаст собрал его практические советы в одном месте. Полезно
+                    даже тем, кто не хочет в vendor lock.
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/networking-product-meetup.html">
+                <time datetime="2026-05-05">5 мая 2026 г.</time>
+                <div>
+                  <span class="article-title">Нетворкаем!</span>
+                  <p class="article-description">
+                    Сходил на продуктовый митап «Почему хорошие команды делают плохие продукты»: процессы,
+                    мискоммуникации, tiny teams, product-инженеры и много нетворкинга.
+                  </p>
+                </div>
+              </a>
+            </li>
+            <li class="article-item">
+              <a class="article-link" href="posts/how-i-got-into-trap-again.html">
+                <time datetime="2026-04-24">24 апреля 2026 г.</time>
+                <div>
+                  <span class="article-title">
+                    Как я попал в ловушку, о которой давно знал, и как из нее выбрался... опять
+                  </span>
+                  <p class="article-description">
+                    Поддержание контекста участников Agile-команды — дорогое удовольствие. Учимся правильным
+                    коммуникациям, пока мы все не стали (нас всех не заменили) product-инженерами.
+                  </p>
+                </div>
+              </a>
+            </li>
+          </ul>
+          <p id="articles-empty" class="empty" hidden></p>
         </section>
       </main>
     </div>
