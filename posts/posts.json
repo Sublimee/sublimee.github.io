@@ -1,5 +1,11 @@
 [
   {
+    "title": "Не судите строго, это мой первый моноид",
+    "date": "2026-08-13",
+    "url": "posts/java-monoid-fold.html",
+    "description": "Зачем описывать свёртку через моноид, если максимум можно найти одной строкой."
+  },
+  {
     "title": "Поражение в programming in small",
     "date": "2026-08-07",
     "url": "posts/kotlin-join-to-string-production-bug.html",

@@ -237,6 +237,24 @@ body {
   line-height: 1.6;
 }
 
+.post details {
+  margin: 0 0 16px;
+}
+
+.post summary {
+  cursor: pointer;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.post details[open] summary {
+  margin-bottom: 10px;
+}
+
+.post details pre {
+  margin-bottom: 0;
+}
+
 .post-cover {
   display: block;
   width: min(100%, 620px);

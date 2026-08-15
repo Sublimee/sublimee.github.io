@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Не судите строго, это мой первый моноид | magusev.ru</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post">
+          <div class="post-meta-row">
+            <time datetime="2026-08-13">13 августа</time>
+            <a class="post-top-link" href="../index.html">← На главную</a>
+          </div>
+          <h1>Не судите строго, это мой первый моноид</h1>
+
+          <details>
+            <summary>Посмотреть код</summary>
+            <pre><code>public class Main {
+    public static void main(String[] args) {
+        var results = List.of(
+                new GameResult("Petr", 120),
+                new GameResult("Ivan", 350),
+                new GameResult("Ann", 210),
+                new GameResult("Marie", 290)
+        );
+
+        var best = Extension.fold(
+                results,
+                new Max&lt;&gt;(GameResult::new)
+        );
+
+        System.out.println(best);
+    }
+}
+
+interface Monoid&lt;T&gt; {
+    T zero();
+
+    T plus(T left, T right);
+}
+
+final class Extension {
+
+    public static &lt;T&gt; T fold(
+            Collection&lt;T&gt; collection,
+            Monoid&lt;T&gt; monoid
+    ) {
+        return collection.stream()
+                .reduce(monoid.zero(), monoid::plus);
+    }
+
+}
+
+record GameResult(String player, int score) implements Comparable&lt;GameResult&gt; {
+
+    GameResult() {
+        this("", Integer.MIN_VALUE);
+    }
+
+    @Override
+    public int compareTo(GameResult o) {
+        return Integer.compare(score, o.score);
+    }
+}
+
+final class Max&lt;T extends Comparable&lt;T&gt;&gt; implements Monoid&lt;T&gt; {
+
+    private final Supplier&lt;T&gt; zeroSupplier;
+
+    public Max(Supplier&lt;T&gt; zeroSupplier) {
+        this.zeroSupplier = zeroSupplier;
+    }
+
+    @Override
+    public T zero() {
+        return zeroSupplier.get();
+    }
+
+    @Override
+    public T plus(T left, T right) {
+        return left.compareTo(right) &gt; 0
+                ? left
+                : right;
+    }
+}</code></pre>
+          </details>
+
+          <p>И не пишите, что можно было бы написать это в одну строчку!</p>
+          <pre><code>var best = results.stream()
+        .max(Comparator.naturalOrder())
+        .orElse(null);</code></pre>
+
+          <p>
+            Моноид здесь, действительно, избыточен. Обычная функциональная цепочка для нахождения максимума читается и
+            пишется намного проще.
+          </p>
+          <p>
+            Смысл приседания с моноидом в том, что мы универсально описываем, как объект должен вести себя в свёртке,
+            вместо того, чтобы фиксировать алгоритм непосредственно в <code>reduce</code>:
+          </p>
+          <pre><code>collection.stream()
+    .reduce(
+        // с чего начинаем / отсутствие результата
+        monoid.zero(),
+        // как объединить два результата
+        monoid::plus
+    );
+
+// vs
+
+results.stream()
+    .reduce(
+        // с чего начинаем / отсутствие результата
+        new GameResult(),
+        // как объединить два результата
+        (left, right) -&gt; left.score() &gt; right.score()
+                         ? left
+                         : right
+        );</code></pre>
+
+          <p>
+            Всё ради переиспользуемости кода. Моноид можно поменять, а код внутри <code>reduce</code> останется без
+            изменений, он знает как с ним работать.
+          </p>
+          <p>
+            Познакомиться подробнее с темой можно
+            <a href="https://habr.com/ru/articles/655059/" target="_blank" rel="noreferrer noopener">здесь</a>.
+          </p>
+
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>
