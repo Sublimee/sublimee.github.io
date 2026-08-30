@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Почему агентные возможности IntelliJ IDEA уже не уступают модным AI-редакторам Zed и Trae."
+    />
+    <link rel="canonical" href="https://magusev.ru/posts/intellij-idea-vs-zed-trae.html" />
+    <title>Зачем мигрировать с IntelliJ IDEA на Zed и Trae? | magusev.ru</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post">
+          <div class="post-meta-row">
+            <time datetime="2026-08-21">21 августа</time>
+            <a class="post-top-link" href="../index.html">← На главную</a>
+          </div>
+          <h1>Зачем мигрировать с IntelliJ IDEA на Zed и Trae?</h1>
+          <img
+            class="post-cover"
+            src="../photos/c20f68e4-bc16-d2b8-9b21-7d6700133684.jpg"
+            alt="Шутка о новом приложении VS Code, в котором можно увидеть код до его отправки"
+          />
+
+          <p>
+            Попробовал я эти ваши Zed, Trae, но, к сожалению, не увидел ни одной киллер-фичи. Ладно, на ум пришла
+            оркестрация своих субагентов (а не на стороне агента/harness). Думал, хоть в тытрубе мне о них расскажут,
+            но нет. В итоге не понял, почему мне нужно мигрировать на них со старой доброй IntelliJ IDEA. Есть адепты,
+            которые утверждают, что это нужно сделать обязательно!
+          </p>
+
+          <p>Я этого решительно не понимаю. В IDEA:</p>
+          <ul>
+            <li>ACP Registry — есть;</li>
+            <li>worktree для параллельной работы разных агентов — есть;</li>
+            <li>менеджить скилы и MCP — можно.</li>
+          </ul>
+
+          <p>
+            Наверное, я просто не успел на первую волну хайпа, когда в IDEA не было нормальной поддержки. Да, первые
+            версии плагина AI Assistant действительно работали, мягко говоря, криво: нельзя было, например,
+            скопировать что-то из диалога, подтягивались не все модели и т. п. Рейтинг 2.1 говорит сам за себя, но
+            работать всё же можно было. С теми же KiloCode и Continue было гораздо больнее. Сейчас же пользоваться им
+            стало очень комфортно, я не испытываю неудобств.
+          </p>
+
+          <p>
+            Вообще у IDEA отличный потенциал для передачи управления всеми своими возможностями агенту: индексация,
+            доступ к AST, поиск, рефакторинг. Вот и плагин для этого есть — MCP Server. Опять, правда, с рейтингом три
+            звезды. Когда-то пользовался, но сижу пока на стороннем IDE Index MCP Server. Рекомендую!
+          </p>
+
+          <p>
+            Тот же ij-debugger недавно релизнули, когда агент может использовать фичи IDE для дебага приложений.
+            Раскапывать причину багов, идущих из кишок Spring, теперь должно быть одно удовольствие.
+          </p>
+
+          <p>Это гораздо интереснее, чем базовый анализ кода грепаньем, да ещё и с низкой утилизацией токенов.</p>
+
+          <p>
+            Рейтинги в моём понимании скорее отражают историчность качества пользовательского опыта, когда на самых
+            ранних этапах нельзя было нормально пользоваться продуктом. Недочёты в плагинах со временем поправят, они
+            будут идти в ногу с новыми фичами рынка, тут нет сомнений.
+          </p>
+
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

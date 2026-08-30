@@ -1,5 +1,11 @@
 [
   {
+    "title": "Зачем мигрировать с IntelliJ IDEA на Zed и Trae?",
+    "date": "2026-08-21",
+    "url": "posts/intellij-idea-vs-zed-trae.html",
+    "description": "Почему агентные возможности IntelliJ IDEA уже не уступают модным AI-редакторам."
+  },
+  {
     "title": "Не судите строго, это мой первый моноид",
     "date": "2026-08-13",
     "url": "posts/java-monoid-fold.html",
