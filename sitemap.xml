@@ -2,7 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://magusev.ru/</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-13</lastmod>
+  </url>
+  <url>
+    <loc>https://magusev.ru/posts/non-empty-list-kotlin.html</loc>
+    <lastmod>2026-09-13</lastmod>
   </url>
   <url>
     <loc>https://magusev.ru/posts/one-kilo-per-week.html</loc>

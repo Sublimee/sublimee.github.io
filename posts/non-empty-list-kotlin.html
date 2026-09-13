@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Задаём инварианты с помощью конкретных типов"
+    />
+    <link rel="canonical" href="https://magusev.ru/posts/non-empty-list-kotlin.html" />
+    <title>Как сделать непустой список в Kotlin? | magusev.ru</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post">
+          <div class="post-meta-row">
+            <time datetime="2026-09-13">13 сентября</time>
+            <a class="post-top-link" href="../index.html">← На главную</a>
+          </div>
+          <h1>Как сделать непустой список в Kotlin?</h1>
+
+          <img
+            class="post-cover"
+            src="../photos/a57eef13-9948-4272-a64b-3f363a4d90e9.jpg"
+            alt="Комикс QuickBird: имениннику подарили пустую коробку вместо non-empty box"
+          />
+
+          <p>
+            Много думал... Плакал... В итоге подсмотрел элегантную идею
+            <a
+              href="https://quickbirdstudios.com/blog/non-empty-lists-kotlin/"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              здесь</a
+            >:
+          </p>
+          <pre><code>data class NonEmptyList&lt;out T&gt;(
+    val head: T,
+    val tail: List&lt;T&gt;,
+) ...</code></pre>
+
+          <p>
+            <code>head</code> хранит обязательный первый элемент, а <code>tail</code> — все остальные. Если других
+            элементов нет, то <code>tail</code> задаётся пустым списком. Ловко!
+          </p>
+
+          <p>
+            Зачем оно такое надо? Бывают задачи где нам известно, что список будет содержать как минимум один элемент.
+            Тогда приводим список на границе нашего приложения к <code>NonEmptyList</code> (у нас по контракту такой
+            инвариант предполагается), чтобы далее не делать лишний <s>десяток</s> раз проверок вида:
+          </p>
+          <pre><code>val list: List&lt;Any&gt; = listOf(...)
+...
+val first: Any? = list.firstOrNull()
+if (first != null) ...
+// или, что ещё хуже, так:
+val first = if (list.isEmpty()) throw ... else list.first()</code></pre>
+
+          <p>В тестах нужно будет обеспечить покрытием все эти ветвления! Можно, конечно, вовсе обойтись без проверок:</p>
+          <pre><code>list.first() // под капотом NoSuchElementException</code></pre>
+          <p>
+            Тогда изменение контракта в будущем (пустой список) приведёт к непредсказуемому поведению в коде, так как
+            <code>NoSuchElementException</code> теперь возможен, но ни юнит ни интеграционных тестов у нас на него нет.
+            Сможете ли однозначно сказать, как это исключение повлияет на все бизнес-сценарии?
+          </p>
+
+          <p>
+            P.S. Очевидно, что работает описанный подход не только со списком. Если у значения есть важный инвариант,
+            зачастую его можно выразить отдельным, более конкретным типом: <code>NonEmptyString</code>,
+            <code>Email</code>, ...
+          </p>
+
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>
