@@ -1,5 +1,11 @@
 [
   {
+    "title": "Мы же не пишем документацию на 80%...",
+    "date": "2026-09-25",
+    "url": "posts/full-test-coverage.html",
+    "description": "Даёшь 100% покрытие кода тестами!"
+  },
+  {
     "title": "Как сделать непустой список в Kotlin?",
     "date": "2026-09-13",
     "url": "posts/non-empty-list-kotlin.html",
