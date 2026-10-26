@@ -8,6 +8,7 @@ const port = readPort();
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
+  ".gif": "image/gif",
   ".html": "text/html; charset=utf-8",
   ".jpg": "image/jpeg",
   ".js": "text/javascript; charset=utf-8",

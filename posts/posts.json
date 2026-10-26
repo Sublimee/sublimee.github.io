@@ -1,5 +1,11 @@
 [
   {
+    "title": "С возвращением, Graphify! До свидания, Graphify!",
+    "date": "2026-10-23",
+    "url": "posts/graphify-kotlin.html",
+    "description": "Как Graphify справился с поиском по Kotlin/Spring-сервису."
+  },
+  {
     "title": "Код перестал стоить хоть что-то 💸",
     "date": "2026-10-16",
     "url": "posts/ai-personal-tooling.html",

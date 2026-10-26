@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Как Graphify справился с поиском по Kotlin/Spring-сервису."
+    />
+    <link rel="canonical" href="https://magusev.ru/posts/graphify-kotlin.html" />
+    <title>С возвращением, Graphify! До свидания, Graphify! | magusev.ru</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post">
+          <div class="post-meta-row">
+            <time datetime="2026-10-23">23 октября</time>
+            <a class="post-top-link" href="../index.html">← На главную</a>
+          </div>
+          <h1>С возвращением, Graphify! До свидания, Graphify!</h1>
+          <img
+            class="post-cover"
+            src="../photos/e0261dcf-abc6-499b-8f16-5a31532995c2.gif"
+            alt="Дедушка Симпсон заходит в дверь и тут же выходит на глазах у Барта"
+          />
+
+          <p>
+            <a href="https://github.com/Graphify-Labs/graphify" target="_blank" rel="noreferrer noopener">Graphify</a>
+            — это MCP для AST от зумеров: обещает превратить репозиторий в граф знаний, по которому агент ходит
+            вместо грепанья и экономит токены.
+          </p>
+
+          <p>
+            В прошлом году уже пробовал его, но результат оказался неубедительным (просто плохо искал по коду
+            простые вещи). Я списал это на незрелость технологии и копать глубже не стал. Остался с того раза
+            сидеть на плагине Index MCP для Idea, о котором уже писал ранее
+            <a href="intellij-idea-vs-zed-trae.html">тут</a>.
+          </p>
+
+          <p>
+            Но вот прошло время: поумнели модели, а сам тул оброс новыми коммитами. Попробовал его снова на рабочем
+            Kotlin/Spring-сервисе. Пять вопросов, на которые обычно хватает пары грепов: где используется JSON
+            с ожидаемым ответом, где объявлен класс, кто вызывает метод, где используется поле, через какие методы
+            запрос доходит до создания определенного экземпляра.
+          </p>
+
+          <p>
+            Итог: полный ответ — на один вопрос, частичный — ещё на один. На остальные три —
+            <code>No node matching</code>.
+          </p>
+
+          <p>В этот раз чуть глубже решил разобраться, что пошло не так. Оказалось:</p>
+          <ul>
+            <li>JSON и строковые литералы в граф не попадают</li>
+            <li>
+              вызовы через поля, внедрённые через конструктор, теряются, а это, на минуточку, весь Spring!
+            </li>
+            <li>одноимённые методы склеиваются</li>
+          </ul>
+
+          <p>
+            Показательно, что аналогичные запросы к другому рабочему Java-сервису отработали штатно. Проблема
+            именно в поддержке Kotlin.
+          </p>
+
+          <p>
+            А вот, похоже, и
+            <a href="https://github.com/Graphify-Labs/graphify/issues/1699" target="_blank" rel="noreferrer noopener">интересующий меня issue</a>,
+            который висит с июля. PR с фиксами тоже есть, но пока не влит. Нашёл аналогичные, но уже пофикшенные
+            проблемы с другими ЯП.
+          </p>
+
+          <p>
+            Очевидно, что весь AI-харнесс ещё очень молод и не лишён детских болезней, но это не повод
+            не экспериментировать. Просто нужно проверять и перепроверять решения на своём стеке/проекте.
+            Мой приёмочный тест, к сожалению или к счастью, пройден не был. Надеюсь, доберусь в ближайшее время
+            до аналогов.
+          </p>
+
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>
