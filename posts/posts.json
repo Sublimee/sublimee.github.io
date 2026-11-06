@@ -1,5 +1,11 @@
 [
   {
+    "title": "Учимся различать абстракции",
+    "date": "2026-11-06",
+    "url": "posts/generic-and-interface-abstractions.html",
+    "description": "Генерико-подобные и интерфейсо-подобные абстракции на примерах Java и Kotlin."
+  },
+  {
     "title": "С возвращением, Graphify! До свидания, Graphify!",
     "date": "2026-10-23",
     "url": "posts/graphify-kotlin.html",

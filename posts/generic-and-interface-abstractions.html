@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Генерико-подобные и интерфейсо-подобные абстракции на примерах Java и Kotlin."
+    />
+    <link rel="canonical" href="https://magusev.ru/posts/generic-and-interface-abstractions.html" />
+    <title>Учимся различать абстракции | magusev.ru</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../technical-post.css" />
+    <script src="../header.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <site-header></site-header>
+
+      <main>
+        <article class="post post--technical">
+          <div class="post-meta-row">
+            <time datetime="2026-11-06">6 ноября</time>
+            <a class="post-top-link" href="../index.html">← На главную</a>
+          </div>
+          <h1>Учимся различать абстракции</h1>
+          <img
+            class="post-cover"
+            src="../photos/7e6bfb8a-b090-45c1-b2c0-9be33ee410d9.jpg"
+            alt="Мем о двух языках программирования: наши великие абстракции против их примитивных обходных решений"
+          />
+
+          <p>Под словом "абстракция" часто понимаются совсем разные вещи. Моноид — абстракция. Интерфейс CashbackRule для правил начисления кэшбэка — тоже абстракция. "Ну моноид, очевидно, из функционального программирования (ФП), а интерфейс — из ООП. Это разные абстракции". А Comparable — всегда про ООП? Функция и реализация интерфейса, переданные в метод как аргументы, — это разные абстракции? И как понять, какие абстракции за что отвечают?</p>
+
+          <p>Будем различать генерико-подобные абстракции (например, Comparable, Iterable и Monoid) и интерфейсо-подобные (например, для расчёта кэшбэка). Рассмотрим свойства каждого вида на примерах (Kotlin и Java) в ФП и за его пределами.</p>
+
+          <h2>Генерико-подобные абстракции</h2>
+
+          <h3>выражают абстрактные свойства</h3>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Свойство (из Javadoc): This interface imposes a total ordering on the objects of each class that implements it.</p>
+
+          <pre><code class="language-java"><span class="token keyword">interface</span> <span class="token class-name">Comparable</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> <span class="token punctuation">{</span>
+    <span class="token keyword">int</span> <span class="token function">compareTo</span><span class="token punctuation">(</span><span class="token class-name">T</span> other<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Item</span> <span class="token keyword">implements</span> <span class="token class-name">Comparable</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Item</span><span class="token punctuation">></span></span> <span class="token punctuation">{</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">}</span>
+
+<span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span> <span class="token keyword">extends</span> <span class="token class-name">Comparable</span><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span><span class="token punctuation">></span></span> <span class="token class-name">T</span> <span class="token function">max</span><span class="token punctuation">(</span><span class="token class-name">T</span> a<span class="token punctuation">,</span> <span class="token class-name">T</span> b<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> a<span class="token punctuation">.</span><span class="token function">compareTo</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span> <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">?</span> a <span class="token operator">:</span> b<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">Item</span> result <span class="token operator">=</span> <span class="token function">max</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+          <p>Нам здесь важно не только то, как называется интерфейс и какая сигнатура у предоставляемого им метода, но и "зашитые" в него законы, которым должна следовать конкретная реализация. Например, транзитивность.</p>
+
+          <p>Comparable здесь вшивает свойство непосредственно в тип, в отличие, например, от Comparator. Это удобно, когда сравнение идёт всегда по одному сценарию, иначе — будет скорее сбивать с толку. Comparator'ов же может быть несколько: каждый под свой сценарий.</p>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">interface</span> Monoid<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">val</span> empty<span class="token operator">:</span> T
+    <span class="token keyword">fun</span> <span class="token function">combine</span><span class="token punctuation">(</span>a<span class="token operator">:</span> T<span class="token punctuation">,</span> b<span class="token operator">:</span> T<span class="token punctuation">)</span><span class="token operator">:</span> T
+<span class="token punctuation">}</span>
+
+<span class="token keyword">val</span> sumMonoid <span class="token operator">=</span> <span class="token keyword">object</span> <span class="token operator">:</span> Monoid<span class="token operator">&lt;</span>Int<span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">override</span> <span class="token keyword">val</span> empty <span class="token operator">=</span> <span class="token number">0</span>
+    <span class="token keyword">override</span> <span class="token keyword">fun</span> <span class="token function">combine</span><span class="token punctuation">(</span>a<span class="token operator">:</span> Int<span class="token punctuation">,</span> b<span class="token operator">:</span> Int<span class="token punctuation">)</span> <span class="token operator">=</span> a <span class="token operator">+</span> b
+<span class="token punctuation">}</span>
+
+<span class="token keyword">val</span> multiplicationMonoid <span class="token operator">=</span> <span class="token keyword">object</span> <span class="token operator">:</span> Monoid<span class="token operator">&lt;</span>Int<span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">override</span> <span class="token keyword">val</span> empty <span class="token operator">=</span> <span class="token number">1</span>
+    <span class="token keyword">override</span> <span class="token keyword">fun</span> <span class="token function">combine</span><span class="token punctuation">(</span>a<span class="token operator">:</span> Int<span class="token punctuation">,</span> b<span class="token operator">:</span> Int<span class="token punctuation">)</span> <span class="token operator">=</span> a <span class="token operator">*</span> b
+<span class="token punctuation">}</span>
+
+<span class="token keyword">fun</span> <span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token function">fold</span><span class="token punctuation">(</span>xs<span class="token operator">:</span> List<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token punctuation">,</span> m<span class="token operator">:</span> Monoid<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token punctuation">)</span><span class="token operator">:</span> T <span class="token operator">=</span> xs<span class="token punctuation">.</span><span class="token function">fold</span><span class="token punctuation">(</span>m<span class="token punctuation">.</span>empty<span class="token punctuation">,</span> m<span class="token operator">::</span>combine<span class="token punctuation">)</span>
+
+<span class="token keyword">val</span> numbers <span class="token operator">=</span> <span class="token function">listOf</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+
+<span class="token keyword">val</span> sum <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>numbers<span class="token punctuation">,</span> sumMonoid<span class="token punctuation">)</span>
+<span class="token keyword">val</span> multiplication <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>numbers<span class="token punctuation">,</span> multiplicationMonoid<span class="token punctuation">)</span></code></pre>
+
+          <p>Продолжая идею, затронутую в Comparable, стоит отметить, что хотя контракт для empty и combine не задан явно (значения можно объединять с помощью ассоциативной операции, для которой есть нейтральный элемент), сама абстракция Monoid его неявно подразумевает. И мы в реализациях должны его обеспечивать.</p>
+
+          <p>Как и Comparator, Monoid сам несёт в себе свойство и не привязан к конкретным классам: для одного класса может быть несколько моноидов и Comparator'ов.</p>
+
+          <h3>спецификации бессрочны</h3>
+
+          <p>Так как мы выражаем абстрактные свойства (спецификации), то эти свойства и остаются актуальными независимо от того, с какими бизнес-требованиями мы сейчас работаем.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Интерфейс Iterable отвечает за последовательный обход элементов (содержание которых нас не интересует):</p>
+
+          <pre><code class="language-java"><span class="token keyword">interface</span> <span class="token class-name">Iterable</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> <span class="token punctuation">{</span>
+    <span class="token class-name">Iterator</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> <span class="token function">iterator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> <span class="token keyword">int</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token class-name">Iterable</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> elements<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">int</span> count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">T</span> element <span class="token operator">:</span> elements<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        count<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> count<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p>Идея (спецификация) не поменяется, даже если поменяется объявление интерфейса. Ну и, понятно, что на основе Iterable могут появляться новые реализации, а старые — отмирать.</p>
+
+          <p>Сам Iterable, конечно, "слабее" того же Comparable с точки зрения (математических) законов: формально они не заданы, но мы ожидаем, что за один обход каждый элемент будет выдан ровно один раз. Тем не менее этого достаточно, чтобы рассматривать его отдельно от какой-либо предметной области и занести в клуб бессрочных.</p>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <p>На основе того же Monoid с изменением какой-то логики (в нашем случае работы с деньгами) могут появляться новые реализации:</p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">val</span> sumMoneyMonoid <span class="token operator">=</span> <span class="token keyword">object</span> <span class="token operator">:</span> Monoid<span class="token operator">&lt;</span>Int<span class="token operator">></span> <span class="token punctuation">{</span> <span class="token operator">..</span><span class="token punctuation">.</span>
+<span class="token keyword">val</span> total <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>payments<span class="token punctuation">,</span> sumMoneyMonoid<span class="token punctuation">)</span>
+                    ↓
+<span class="token keyword">val</span> sumMoneyMonoid <span class="token operator">=</span> <span class="token keyword">object</span> <span class="token operator">:</span> Monoid<span class="token operator">&lt;</span>BigDecimal<span class="token operator">></span> <span class="token punctuation">{</span> <span class="token operator">..</span><span class="token punctuation">.</span>
+<span class="token keyword">val</span> total <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>payments<span class="token punctuation">,</span> sumMoneyMonoid<span class="token punctuation">)</span>
+                    ↓
+<span class="token keyword">val</span> sumMoneyMonoid <span class="token operator">=</span> <span class="token keyword">object</span> <span class="token operator">:</span> Monoid<span class="token operator">&lt;</span>Money<span class="token operator">></span> <span class="token punctuation">{</span> <span class="token operator">..</span><span class="token punctuation">.</span>
+<span class="token keyword">val</span> total <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>payments<span class="token punctuation">,</span> sumMoneyMonoid<span class="token punctuation">)</span></code></pre>
+
+          <p>Сами же законы, заключённые в Monoid, остаются неизменными.</p>
+
+          <h3>используются для идентификации идиом (не буквальный смысл)</h3>
+
+          <p>Выводим закономерности в разных алгоритмах. Абстракция должна получиться такой, что не будет привязана к конкретному домену.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Обход разных коллекций элементов:</p>
+
+          <pre><code class="language-java"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token comment">// обход массива</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> array<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">process</span><span class="token punctuation">(</span>array<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token comment">// обход списка</span>
+<span class="token class-name">Node</span> current <span class="token operator">=</span> head<span class="token punctuation">;</span>
+<span class="token keyword">while</span> <span class="token punctuation">(</span>current <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">process</span><span class="token punctuation">(</span>current<span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    current <span class="token operator">=</span> current<span class="token punctuation">.</span>next<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre>
+
+          <p>сводится к переходу от элемента к элементу. Эту идею отражает итератор:</p>
+
+          <pre><code class="language-java"><span class="token keyword">interface</span> <span class="token class-name">Iterator</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> <span class="token punctuation">{</span>
+    <span class="token keyword">boolean</span> <span class="token function">hasNext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">T</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <p>Издалека виден повторяющийся приём преобразования коллекций:</p>
+
+          <pre><code class="language-java"><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">></span></span> users <span class="token operator">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">;</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> names <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">User</span> user <span class="token operator">:</span> users<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    names<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Product</span><span class="token punctuation">></span></span> products <span class="token operator">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">;</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> titles <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">Product</span> product <span class="token operator">:</span> products<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    titles<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>product<span class="token punctuation">.</span><span class="token function">getTitle</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">Queue</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Order</span><span class="token punctuation">></span></span> orders <span class="token operator">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">;</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Long</span><span class="token punctuation">></span></span> ids <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">Order</span> order <span class="token operator">:</span> orders<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ids<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p>Алгоритмы сводятся к одной идее с map, который ничего не говорит нам и сам ничего не знает о конкретном домене:</p>
+
+          <pre><code class="language-java"><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> names <span class="token operator">=</span> users<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token class-name">User</span><span class="token operator">::</span><span class="token function">getName</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> titles <span class="token operator">=</span> products<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token class-name">Product</span><span class="token operator">::</span><span class="token function">getTitle</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Long</span><span class="token punctuation">></span></span> ids <span class="token operator">=</span> orders<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token class-name">Order</span><span class="token operator">::</span><span class="token function">getId</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+          <h3>статическая типизация</h3>
+
+          <p>Соблюдение явных требований абстракции проверяется на этапе компиляции.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Возьмём метод max из примера выше:</p>
+
+          <pre><code class="language-java"><span class="token keyword">record</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+<span class="token function">max</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+          <p>и в соответствующей строке получим ошибку компиляции из-за использования типа User, который не удовлетворяет ограничению T extends Comparable&lt;T&gt;.</p>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <p>Возьмём моноид из примера выше:</p>
+
+          <pre><code class="language-kotlin"><span class="token function">fold</span><span class="token punctuation">(</span><span class="token function">listOf</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sumMonoid<span class="token punctuation">)</span> <span class="token comment">// без ошибок компиляции</span>
+<span class="token function">fold</span><span class="token punctuation">(</span><span class="token function">listOf</span><span class="token punctuation">(</span><span class="token string-literal singleline"><span class="token string">"a"</span></span><span class="token punctuation">)</span><span class="token punctuation">,</span> sumMonoid<span class="token punctuation">)</span> <span class="token comment">// выдаст ошибку компиляции: Monoid&lt;Int> не подходит для List&lt;String></span></code></pre>
+
+          <h3>полиморфизм времени компиляции</h3>
+
+          <p>Какая реализация будет вызвана, определяет компилятор по статически заданным типам, а не класс объекта в рантайме, как при динамическом полиморфизме.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Компилятор выбирает перегруженный метод по тому, обладает ли тип свойством Comparable:</p>
+
+          <pre><code class="language-java"><span class="token keyword">void</span> <span class="token function">kind</span><span class="token punctuation">(</span><span class="token class-name">Object</span> o<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">}</span>
+
+<span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span> <span class="token keyword">extends</span> <span class="token class-name">Comparable</span><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span><span class="token punctuation">></span></span> <span class="token keyword">void</span> <span class="token function">kind</span><span class="token punctuation">(</span><span class="token class-name">T</span> c<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">Object</span> x <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token function">kind</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// в рантайме Integer, но компилятор видит Object, поэтому будет выбран первый метод</span>
+<span class="token function">kind</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// Integer подходит под оба метода, но второй будет выбран как более специфичный</span></code></pre>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <p>Выбор моноида по типу элементов списка:</p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">val</span> sumMoneyMonoid <span class="token operator">=</span> <span class="token keyword">object</span> <span class="token operator">:</span> Monoid<span class="token operator">&lt;</span>Money<span class="token operator">></span> <span class="token punctuation">{</span> <span class="token operator">..</span><span class="token punctuation">.</span>
+
+<span class="token keyword">fun</span> List<span class="token operator">&lt;</span>Int<span class="token operator">></span><span class="token punctuation">.</span><span class="token function">combineAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">:</span> Int <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>sumMonoid<span class="token punctuation">.</span>empty<span class="token punctuation">,</span> sumMonoid<span class="token operator">::</span>combine<span class="token punctuation">)</span>
+<span class="token keyword">fun</span> List<span class="token operator">&lt;</span>Money<span class="token operator">></span><span class="token punctuation">.</span><span class="token function">combineAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">:</span> Money <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>sumMoneyMonoid<span class="token punctuation">.</span>empty<span class="token punctuation">,</span> sumMoneyMonoid<span class="token operator">::</span>combine<span class="token punctuation">)</span>
+
+<span class="token function">listOf</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">combineAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// List&lt;Int>.combineAll()</span>
+<span class="token function">listOf</span><span class="token punctuation">(</span><span class="token function">Money</span><span class="token punctuation">(</span><span class="token operator">..</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">Money</span><span class="token punctuation">(</span><span class="token operator">..</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">combineAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// List&lt;Money>.combineAll()</span>
+
+emptyList<span class="token operator">&lt;</span>Int<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">combineAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// List&lt;Int>.combineAll()</span>
+emptyList<span class="token operator">&lt;</span>Money<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">combineAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// List&lt;Money>.combineAll()</span></code></pre>
+
+          <p>Компилятор определяет нужный вызов combineAll по типу списка. В рантайме же type erasure не даёт нам в принципе различить два списка разных типов, а соответственно и выбрать правильный combineAll. Пустые списки — ещё более сильный пример: в рантайме у них нет ни элементов, ни информации о типе, а нужная версия всё равно вызывается (скажем спасибо компилятору).</p>
+
+          <h3>механизм генерализации</h3>
+
+          <p>Позволяет один раз написать код обработки всех типов для заданной абстракции (обладающих нужным свойством). Это продолжение идеи выделения идиом. Там мы разный по форме, но не по смыслу код заворачивали в одну абстракцию. Здесь же эту абстракцию используем, чтобы обобщённо решать определённую задачу так же на разных типах.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Теперь решения из блока "используются для идентификации идиом" можно генерализировать:</p>
+
+          <pre><code class="language-java"><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> <span class="token keyword">void</span> <span class="token function">processAll</span><span class="token punctuation">(</span><span class="token class-name">Iterator</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> iterator<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>iterator<span class="token punctuation">.</span><span class="token function">hasNext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">process</span><span class="token punctuation">(</span>iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token function">processAll</span><span class="token punctuation">(</span>list<span class="token punctuation">.</span><span class="token function">iterator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">processAll</span><span class="token punctuation">(</span><span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Integer</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">{</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">iterator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <p>Ранее уже показывали генерализацию при работе с разными моноидами:</p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">fun</span> <span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token function">fold</span><span class="token punctuation">(</span>xs<span class="token operator">:</span> List<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token punctuation">,</span> m<span class="token operator">:</span> Monoid<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token punctuation">)</span><span class="token operator">:</span> T <span class="token operator">=</span> xs<span class="token punctuation">.</span><span class="token function">fold</span><span class="token punctuation">(</span>m<span class="token punctuation">.</span>empty<span class="token punctuation">,</span> m<span class="token operator">::</span>combine<span class="token punctuation">)</span>
+
+<span class="token keyword">val</span> moneyTotal <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>listOf<span class="token operator">&lt;</span>Money<span class="token operator">></span><span class="token punctuation">(</span><span class="token operator">..</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sumMoneyMonoid<span class="token punctuation">)</span>
+<span class="token keyword">val</span> ratio <span class="token operator">=</span> <span class="token function">fold</span><span class="token punctuation">(</span>listOf<span class="token operator">&lt;</span>Ratio<span class="token operator">></span><span class="token punctuation">(</span><span class="token operator">..</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ratioMultiplierMonoid<span class="token punctuation">)</span> <span class="token comment">// empty = 1, combine = a * b</span></code></pre>
+
+          <h2>Интерфейсо-подобные абстракции</h2>
+
+          <h3>выражают понятия предметной области</h3>
+
+          <p>Парное свойство к «выражают абстрактные свойства». Выражают не абстрактные (универсальные математические) свойства, а вполне конкретные понятия предметной области.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Интерфейс выражает вполне конкретное понятие — правила расчёта кэшбэка для транзакции:</p>
+
+          <pre><code class="language-java"><span class="token keyword">interface</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">StandardCashback</span> <span class="token keyword">implements</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> tx<span class="token punctuation">.</span><span class="token function">amountMinors</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">PremiumCashback</span> <span class="token keyword">implements</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> tx<span class="token punctuation">.</span><span class="token function">amountMinors</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">5</span> <span class="token operator">/</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <p>Тот же пример, только вместо интерфейса и реализаций поведение задаётся функциями с алиасом CashbackRule в сигнатуре. Алиас позволяет лучше показать человеку понятие предметной области. Компилятору же всё равно: что CashbackRule, что маппинг из Transaction в Long.</p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">typealias</span> CashbackRule <span class="token operator">=</span> <span class="token punctuation">(</span>Transaction<span class="token punctuation">)</span> <span class="token operator">-></span> Long
+
+<span class="token keyword">val</span> standardCashback<span class="token operator">:</span> CashbackRule <span class="token operator">=</span> <span class="token punctuation">{</span> tx <span class="token operator">-></span> tx<span class="token punctuation">.</span>amountMinors <span class="token operator">/</span> <span class="token number">100</span> <span class="token punctuation">}</span>
+<span class="token keyword">val</span> premiumCashback<span class="token operator">:</span> CashbackRule <span class="token operator">=</span> <span class="token punctuation">{</span> tx <span class="token operator">-></span> tx<span class="token punctuation">.</span>amountMinors <span class="token operator">*</span> <span class="token number">5</span> <span class="token operator">/</span> <span class="token number">100</span> <span class="token punctuation">}</span>
+
+<span class="token keyword">fun</span> <span class="token function">calculate</span><span class="token punctuation">(</span>tx<span class="token operator">:</span> Transaction<span class="token punctuation">,</span> rule<span class="token operator">:</span> CashbackRule<span class="token punctuation">)</span><span class="token operator">:</span> Long <span class="token operator">=</span> <span class="token function">rule</span><span class="token punctuation">(</span>tx<span class="token punctuation">)</span></code></pre>
+
+          <p>Как мы передаём CashbackRule в качестве аргумента-правила в calculate, так же мы передавали и Monoid в fold. Но разница в том, что они выражают (математическое свойство / закон vs банковский домен / бизнес-правило).</p>
+
+          <h3>реализации имеют срок действия</h3>
+
+          <p>Парное свойство к «спецификации бессрочны». Жизненный цикл реализаций CashbackRule ограничен временем жизни требований бизнеса.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>От:</p>
+
+          <pre><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">StandardCashback</span> <span class="token keyword">implements</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> tx<span class="token punctuation">.</span><span class="token function">amountMinors</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">PremiumCashback</span> <span class="token keyword">implements</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> tx<span class="token punctuation">.</span><span class="token function">amountMinors</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">5</span> <span class="token operator">/</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p>при пересмотре тарифов клиентов мы можем прийти, например, к такому изменённому набору:</p>
+
+          <pre><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">StandardCashback</span> <span class="token keyword">implements</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> tx<span class="token punctuation">.</span><span class="token function">amountMinors</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">/</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">PrivateCashback</span> <span class="token keyword">implements</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> tx<span class="token punctuation">.</span><span class="token function">amountMinors</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">10</span> <span class="token operator">/</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p>Одни реализации появляются (PrivateCashback), другие — исчезают (PremiumCashback), третьи — меняются (StandardCashback).</p>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <p>Аналогично:</p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">val</span> standardCashback<span class="token operator">:</span> CashbackRule <span class="token operator">=</span> <span class="token punctuation">{</span> tx <span class="token operator">-></span> tx<span class="token punctuation">.</span>amountMinors <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">/</span> <span class="token number">100</span> <span class="token punctuation">}</span>
+<span class="token keyword">val</span> privateCashback<span class="token operator">:</span> CashbackRule <span class="token operator">=</span> <span class="token punctuation">{</span> tx <span class="token operator">-></span> tx<span class="token punctuation">.</span>amountMinors <span class="token operator">*</span> <span class="token number">10</span> <span class="token operator">/</span> <span class="token number">100</span> <span class="token punctuation">}</span></code></pre>
+
+          <p>Тут стоит отметить разницу между меняющимися правилами начисления кэшбэка и разными реализациями суммирования денег при помощи моноидов, которые тоже сменяли друг друга.</p>
+
+          <p>Реализации PremiumCashback и StandardCashback стали некорректными после изменения бизнес-правил, а вот моноид sumMoneyMonoid, например, для Int продолжает в математическом смысле сохранять актуальность (остаётся корректным), но был заменён из-за смены типа данных.</p>
+
+          <h3>используются для конструирования паттернов</h3>
+
+          <p>Парное свойство к «используются для идентификации идиом». Если идиомы распознают в уже написанном коде, то паттерны закладывают при проектировании, заранее продумывая решение из строительных блоков. Отсюда следствие: если выделение идиомы приводит к множеству безболезненных локальных улучшений в коде, то неиспользование интерфейсо-подобных абстракций вовсе или некорректно выбранные паттерны, которые по сути являются фундаментом, могут привести к переработке архитектуры сервиса.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Сам CashbackRule уже представлял собой паттерн Стратегия: мы можем использовать одну из реализаций расчёта кэшбэка в зависимости от обстоятельств. Можем поверх этой идеи собрать Декоратор для ограничения суммы начисления по одной транзакции:</p>
+
+          <pre><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">BoundedCashback</span> <span class="token keyword">implements</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">CashbackRule</span> rule<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">long</span> maxMinors<span class="token punctuation">;</span>
+
+    <span class="token class-name">BoundedCashback</span><span class="token punctuation">(</span><span class="token class-name">CashbackRule</span> rule<span class="token punctuation">,</span> <span class="token keyword">long</span> maxMinors<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>rule <span class="token operator">=</span> rule<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>maxMinors <span class="token operator">=</span> maxMinors<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token class-name">Math</span><span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>rule<span class="token punctuation">.</span><span class="token function">calculate</span><span class="token punctuation">(</span>tx<span class="token punctuation">)</span><span class="token punctuation">,</span> maxMinors<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">CashbackRule</span> rule <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">BoundedCashback</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">PremiumCashback</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">5_000_000</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+          <p>BoundedCashback работает не с конкретными реализациями, а с интерфейсом CashbackRule, поэтому декораторы можно вкладывать друг в друга и комбинировать с любыми реализациями правил.</p>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <p>Те же паттерны собираются функциями высшего порядка: декоратор — это функция, которая принимает CashbackRule и возвращает новый CashbackRule:</p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">fun</span> <span class="token function">bounded</span><span class="token punctuation">(</span>rule<span class="token operator">:</span> CashbackRule<span class="token punctuation">,</span> maxMinors<span class="token operator">:</span> Long<span class="token punctuation">)</span><span class="token operator">:</span> CashbackRule <span class="token operator">=</span>
+    <span class="token punctuation">{</span> tx <span class="token operator">-></span> <span class="token function">minOf</span><span class="token punctuation">(</span><span class="token function">rule</span><span class="token punctuation">(</span>tx<span class="token punctuation">)</span><span class="token punctuation">,</span> maxMinors<span class="token punctuation">)</span> <span class="token punctuation">}</span>
+
+<span class="token keyword">fun</span> <span class="token function">onlyFor</span><span class="token punctuation">(</span>category<span class="token operator">:</span> Category<span class="token punctuation">,</span> rule<span class="token operator">:</span> CashbackRule<span class="token punctuation">)</span><span class="token operator">:</span> CashbackRule <span class="token operator">=</span>
+    <span class="token punctuation">{</span> tx <span class="token operator">-></span> <span class="token keyword">if</span> <span class="token punctuation">(</span>tx<span class="token punctuation">.</span>category <span class="token operator">==</span> category<span class="token punctuation">)</span> <span class="token function">rule</span><span class="token punctuation">(</span>tx<span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token number">0</span> <span class="token punctuation">}</span>
+
+<span class="token keyword">val</span> restaurantPromo<span class="token operator">:</span> CashbackRule <span class="token operator">=</span>
+    <span class="token function">bounded</span><span class="token punctuation">(</span><span class="token function">onlyFor</span><span class="token punctuation">(</span>Category<span class="token punctuation">.</span>RESTAURANTS<span class="token punctuation">,</span> premiumCashback<span class="token punctuation">)</span><span class="token punctuation">,</span> maxMinors <span class="token operator">=</span> <span class="token number">5_000_000</span><span class="token punctuation">)</span></code></pre>
+
+          <p>"Ограничение суммы кэшбэка по операции в определённой категории" собираем как композицию функций. Каждая функция знает только о CashbackRule.</p>
+
+          <h3>динамическая реализация (рантайм)</h3>
+
+          <p>Парное свойство к «статической типизации». Там требования абстракции проверялись при компиляции. Компилятор знал, с каким типом работает. Здесь компилятор знает только интерфейс, а конкретная реализация будет выбираться в рантайме в зависимости от приходящих извне данных, например, заголовков запроса, конфигурации сервиса, установленного фичатогла в БД и т.д.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>Правило кэшбэка выбирается по пакету услуг клиента:</p>
+
+          <pre><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">class</span> <span class="token class-name">CashbackService</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ServicePackage</span><span class="token punctuation">,</span> <span class="token class-name">CashbackRule</span><span class="token punctuation">></span></span> rules<span class="token punctuation">;</span>
+
+    <span class="token class-name">CashbackService</span><span class="token punctuation">(</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ServicePackage</span><span class="token punctuation">,</span> <span class="token class-name">CashbackRule</span><span class="token punctuation">></span></span> rules<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>rules <span class="token operator">=</span> rules<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Headers</span> headers<span class="token punctuation">,</span> <span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">CashbackRule</span> rule <span class="token operator">=</span> rules<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>headers<span class="token punctuation">.</span><span class="token function">getServicePackage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">return</span> rule<span class="token punctuation">.</span><span class="token function">calculate</span><span class="token punctuation">(</span>tx<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p>На этапе компиляции неизвестно ни какой пакет услуг у клиента, ни какие есть реализации CashbackRule. За счёт перевода клиента на новый пакет услуг пересчёт кэшбэка начнёт идти по новым правилам без изменений в коде и перекомпиляции.</p>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">val</span> rules<span class="token operator">:</span> Map<span class="token operator">&lt;</span>ServicePackage<span class="token punctuation">,</span> CashbackRule<span class="token operator">></span> <span class="token operator">=</span> <span class="token function">mapOf</span><span class="token punctuation">(</span>
+    ServicePackage<span class="token punctuation">.</span>STANDARD <span class="token keyword">to</span> standardCashback<span class="token punctuation">,</span>
+    ServicePackage<span class="token punctuation">.</span>PRIVATE <span class="token keyword">to</span> privateCashback<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">fun</span> <span class="token function">calculate</span><span class="token punctuation">(</span>headers<span class="token operator">:</span> Headers<span class="token punctuation">,</span> tx<span class="token operator">:</span> Transaction<span class="token punctuation">)</span><span class="token operator">:</span> Long <span class="token punctuation">{</span>
+    <span class="token keyword">val</span> rule <span class="token operator">=</span> rules<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span>headers<span class="token punctuation">.</span>servicePackage<span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> <span class="token function">rule</span><span class="token punctuation">(</span>tx<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p>Выбор реализации в ФП — выбор конкретной функции из набора. Компилятор знает только, что в rule лежит CashbackRule. Какая именно функция там окажется, определяется пакетом услуг из заголовков запроса в момент вызова.</p>
+
+          <h3>динамический полиморфизм</h3>
+
+          <p>Парное свойство к «полиморфизму времени компиляции». Там реализацию выбирал компилятор по статически заданному типу. Здесь же одна и та же строка выполняет разный код в зависимости от того, какая конкретная реализация пришла в рантайме.</p>
+
+          <p>Это перекликается с предыдущим блоком. Но там мы определяли причину, по которой может быть выбрана та или иная реализация (откуда она берётся). Динамический полиморфизм скорее про технический механизм, как выбранная реализация попадает в конкретное место вызова.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <pre><code class="language-java"><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">CashbackRule</span><span class="token punctuation">></span></span> rules <span class="token operator">=</span> <span class="token class-name">List</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>
+    <span class="token keyword">new</span> <span class="token class-name">StandardCashback</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword">new</span> <span class="token class-name">PrivateCashback</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">CashbackRule</span> rule <span class="token operator">:</span> rules<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    rule<span class="token punctuation">.</span><span class="token function">calculate</span><span class="token punctuation">(</span>tx<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p>Статический тип у всех элементов один и тот же — CashbackRule. Соответствующий calculate выбирает JVM в момент вызова по классу объекта.</p>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">val</span> rules<span class="token operator">:</span> List<span class="token operator">&lt;</span>CashbackRule<span class="token operator">></span> <span class="token operator">=</span> <span class="token function">listOf</span><span class="token punctuation">(</span>
+    standardCashback<span class="token punctuation">,</span>
+    privateCashback<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+rules<span class="token punctuation">.</span><span class="token function">forEach</span> <span class="token punctuation">{</span> rule <span class="token operator">-></span> <span class="token function">rule</span><span class="token punctuation">(</span>tx<span class="token punctuation">)</span> <span class="token punctuation">}</span></code></pre>
+
+          <p>В ФП динамический полиморфизм достаётся нам "бесплатно" вместе с функциями как значениями: rule(tx) просто выполняет ту функцию, которая лежит в переменной в момент вызова.</p>
+
+          <p>Для выбора реализации часто используют sealed-иерархию и when. Это тоже выбор в рантайме, но его минус в том, что под каждую новую реализацию требуется расширение условий when. Интерфейсы и функции не задают ограничения на расширение новыми реализациями.</p>
+
+          <h3>механизм инкапсуляции</h3>
+
+          <p>Парное свойство к «механизму генерализации». Генерализация расширяет область применения: fold работает с любым типом, для которого есть моноид. Всё его содержимое — empty и combine, которые являются проводниками законов, поэтому видны снаружи, скрывать их не имеет смысла. Инкапсуляция же, наоборот, скрывает детали реализации. Пользователь абстракции знает только "интерфейс". Детали реализаций можно менять, а предоставляемый интерфейс при этом остаётся стабильным.</p>
+
+          <p class="post-example-label"><strong>не из ФП</strong></p>
+
+          <p>PartnerCashback, который является таким же правилом CashbackRule, как и остальные, инкапсулирует условия начислений партнёрам rates:</p>
+
+          <pre><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">PartnerCashback</span> <span class="token keyword">implements</span> <span class="token class-name">CashbackRule</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">PartnerRates</span> rates<span class="token punctuation">;</span>
+
+    <span class="token class-name">PartnerCashback</span><span class="token punctuation">(</span><span class="token class-name">PartnerRates</span> rates<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>rates <span class="token operator">=</span> rates<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">calculate</span><span class="token punctuation">(</span><span class="token class-name">Transaction</span> tx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">long</span> percent <span class="token operator">=</span> rates<span class="token punctuation">.</span><span class="token function">percentFor</span><span class="token punctuation">(</span>tx<span class="token punctuation">.</span><span class="token function">offerId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">return</span> tx<span class="token punctuation">.</span><span class="token function">amountMinors</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> percent <span class="token operator">/</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+
+          <p>CashbackService из блока про динамическую реализацию по-прежнему знает только о calculate(...). Он не знает о существовании rates (нет к ним доступа) и откуда они (например, из БД). Если постановка задачи изменится и условия начнут приходить, например, из конфига, то это изменение не повлечёт за собой изменение потребителей любых CashbackRule.</p>
+
+          <p class="post-example-label"><strong>из ФП</strong></p>
+
+          <pre><code class="language-kotlin"><span class="token keyword">fun</span> <span class="token function">partnerCashback</span><span class="token punctuation">(</span>rates<span class="token operator">:</span> PartnerRates<span class="token punctuation">)</span><span class="token operator">:</span> CashbackRule <span class="token operator">=</span>
+    <span class="token punctuation">{</span> tx <span class="token operator">-></span> tx<span class="token punctuation">.</span>amountMinors <span class="token operator">*</span> rates<span class="token punctuation">.</span><span class="token function">percentFor</span><span class="token punctuation">(</span>tx<span class="token punctuation">.</span>offerId<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">100</span> <span class="token punctuation">}</span>
+
+<span class="token keyword">val</span> partnerCashbackRule<span class="token operator">:</span> CashbackRule <span class="token operator">=</span> <span class="token function">partnerCashback</span><span class="token punctuation">(</span>partnerRates<span class="token punctuation">)</span></code></pre>
+
+          <p>Замыкание в partnerCashback не даёт доступа к rates снаружи, но это не мешает потребителям использовать partnerCashbackRule, как и любой другой CashbackRule, без этого знания.</p>
+
+          <h2>Вывод</h2>
+
+          <p>Хочется ещё раз кратко зафиксировать особенности генерико-подобных (ГПА) и интерфейсо-подобных абстракций (ИПА) для наглядного попарного сравнения:</p>
+
+          <ul>
+<li>ГПА: абстрактные свойства (часто математические), генерализация (во избежание дублирования), стабильность, компиляция</li>
+<li>ИПА: бизнес, инкапсуляция при проектировании домена (ради расширяемости), изменчивость (устаревание, изменение, расширение), рантайм</li>
+</ul>
+
+          <p>Из попарного сравнения свойств видна разница, которая определяется не парадигмой и не синтаксисом, а тем, что выражает абстракция и когда она отрабатывает. Примеры обоих видов абстракций нашлись и в ФП, и за его пределами, так что парадигма не ограничивает область их применения.</p>
+
+          <p>Но в то же время, если бы некоторые примеры не были снабжены комментариями, то их можно было бы с виду отнести не к тому парному свойству. Например, реализации sumMoneyMonoid сменяли друг друга, что похоже на "реализации имеют срок действия", но законы моноида при этом не менялись, а версия для Int осталась корректной. Monoid и CashbackRule одинаково передаются в функцию как аргументы, но первый выражает математическое свойство, а второй — бизнес-правило. Comparable является интерфейсом, но по своей сути — генерико-подобная абстракция.</p>
+
+          <p>Как итог можно сказать, что фундаментом сопровождаемой программы должны быть интерфейсо-подобные абстракции и динамический полиморфизм (именно они отвечают за расширяемость), а генерико-подобные абстракции за счёт выделения свойств (в том числе и математических) над хорошей системой доменных типов позволяют обобщать алгоритмы.</p>
+
+          <a class="back-link" href="../index.html">← Назад к списку статей</a>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

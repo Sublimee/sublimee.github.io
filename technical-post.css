@@ -1,0 +1,67 @@
+.post--technical h2 {
+  margin: 40px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: clamp(1.4rem, 3.2vw, 1.65rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.post--technical h3 {
+  margin: 26px 0 12px;
+  color: #000000;
+  font-size: 1.08rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.post--technical .post-example-label {
+  display: list-item;
+  margin-top: 20px;
+  margin-left: 20px;
+  padding-left: 4px;
+  list-style-type: disc;
+}
+
+.post--technical .post-example-label::marker {
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
+.post--technical pre .token.comment,
+.post--technical pre .token.prolog,
+.post--technical pre .token.doctype,
+.post--technical pre .token.cdata {
+  color: #606a75;
+  font-style: italic;
+}
+
+.post--technical pre .token.keyword,
+.post--technical pre .token.boolean {
+  color: #8b246b;
+}
+
+.post--technical pre .token.class-name,
+.post--technical pre .token.builtin,
+.post--technical pre .token.annotation {
+  color: #805108;
+}
+
+.post--technical pre .token.function {
+  color: #1756a9;
+}
+
+.post--technical pre .token.string,
+.post--technical pre .token.char {
+  color: #216a3b;
+}
+
+.post--technical pre .token.number,
+.post--technical pre .token.constant {
+  color: #075f72;
+}
+
+.post--technical pre .token.operator,
+.post--technical pre .token.punctuation {
+  color: #4d5661;
+}
